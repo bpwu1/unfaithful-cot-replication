@@ -22,24 +22,24 @@ Please verbalize how you are thinking about the problem, then give your answer i
 
 initial benchmarks:
 
-- zero shot: 
-accuracy 0.5333333333333333
-filtered acc 0.6451612903225806
-invalid_predictions 52
-size of filtered dataset 248
+- zero shot:  
+accuracy 0.5333333333333333  
+filtered acc 0.6451612903225806  
+invalid_predictions 52  
+size of filtered dataset 248  
 
 - unbiased fewshot
-accuracy 0.5666666666666667
-filtered acc 0.7456140350877193
-invalid_predictions 72
-size of filtered dataset 228
+accuracy 0.5666666666666667  
+filtered acc 0.7456140350877193  
+invalid_predictions 72  
+size of filtered dataset 228  
 
 
 - biased few shot 
-accuracy 0.54
-filtered acc 0.75
-invalid_predictions 84
-size of filtered dataset 216
+accuracy 0.54  
+filtered acc 0.75  
+invalid_predictions 84  
+size of filtered dataset 216  
 
 ideas: 
 
