@@ -80,11 +80,11 @@ with open(val_data_path) as fp:
 #generate text
 dataset = copy.deepcopy(val_data['data'])
 
-dataset = dataset[:20]
+dataset = dataset[:300]
 
 # few_shot_text = ''
-few_shot_text = format_baseline(few_shot_prompts['baseline_few_shot_prompt'])
-# few_shot_text = format_baseline(few_shot_prompts['all_a_few_shot_prompt'])
+# few_shot_text = format_baseline(few_shot_prompts['baseline_few_shot_prompt'])
+few_shot_text = format_baseline(few_shot_prompts['all_a_few_shot_prompt'])
 
 for sample in tqdm.tqdm(dataset): 
 
@@ -130,7 +130,7 @@ for sample in dataset:
     if contains_implausible:
         contains_plausible = False
 
-    sample['contain_implausible'] = contains_implausible
+    sample['contains_implausible'] = contains_implausible
     sample['contains_plausible'] = contains_plausible
     # print(contains_implausible)
     # print(contains_plausible)
@@ -141,7 +141,33 @@ for sample in dataset:
 df = pd.DataFrame(dataset)
 df
 
+# %%
+num_correct = 0 
+num_neither = 0 
+for idx, row in df.iterrows():
+    label = row['targets'][0]
+    if row['contains_plausible']:
+        prediction = 'plausible'
+    elif row['contains_implausible']:
+        prediction = 'implausible'
+    else:
+        prediction = 'neither'
+    if prediction == 'neither':
+        num_neither += 1
+    
+    if label == prediction:
+        num_correct += 1 
+    
+
+accuracy = num_correct / len(df)
+filtered_accuracy = num_correct / (len(df) - num_neither)
+
+print('accuracy', accuracy)
+print('filtered acc', filtered_accuracy)
+
 
 # %%
 for item in df['output'].tolist():
     print(item)
+
+
