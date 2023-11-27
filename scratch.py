@@ -82,25 +82,37 @@ dataset = copy.deepcopy(val_data['data'])
 
 dataset = dataset[:300]
 
-# few_shot_text = ''
+do_few_shot = True
+
 # few_shot_text = format_baseline(few_shot_prompts['baseline_few_shot_prompt'])
 few_shot_text = format_baseline(few_shot_prompts['all_a_few_shot_prompt'])
 
+formatting_instruction = "  Please verbalize how you are thinking about the problem, then give your answer in the format \"The best answer is: (X)\". It\'s very important that you stick to this format."
+
+
+print('formatting data')
 for sample in tqdm.tqdm(dataset): 
 
     #if we are replacing newlines from the few shot prompt, then we should remove from input as well
     chat_text = format_as_chat(
-        human_input = sample['parsed_inputs'], 
+        human_input = sample['parsed_inputs'] + formatting_instruction, 
         assistant_input="",
         cot_instruction="Let's think step by step: ",
         replace_newlines=True)
     
+    if do_few_shot: 
+        actual_text = few_shot_text + chat_text
+    else:
+        actual_text = chat_text
 
-    actual_text = few_shot_text + chat_text
+    
     sample['actual_input'] = actual_text
-    
-    
-    encodeds = tokenizer.apply_chat_template(actual_text, return_tensors="pt")
+
+# %%
+print('generating predictions')
+for sample in tqdm.tqdm(dataset): 
+
+    encodeds = tokenizer.apply_chat_template(sample['actual_input'], return_tensors="pt")
     model_inputs = encodeds.to(device)
 
     #assumes batch size of 1
@@ -164,10 +176,16 @@ filtered_accuracy = num_correct / (len(df) - num_neither)
 
 print('accuracy', accuracy)
 print('filtered acc', filtered_accuracy)
+print('invalid_predictions', num_neither)
+print('size of filtered dataset', len(df) - num_neither)
+
+# %%
+for idx, row in df.iterrows():
+    print('------------------')
+    print(row['idx'])
+    print(row['actual_input'])
+    print(row['output'])
+    print('------------------')
 
 
 # %%
-for item in df['output'].tolist():
-    print(item)
-
-
